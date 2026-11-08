@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>SNAPGraph NC</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Modeling the tradeoff between payment accuracy and access in North Carolina SNAP recertification.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --gray-700:#3d3d3d;
+    --gray-500:#6b6b6b;
+    --gray-300:#a3a3a3;
+    --line:#e4e4e2;
+    --bg:#ffffff;
+    --bar:#1a1a1a;
+    --bar-track:#eeeeec;
+    --link:#2c5f82;
+    --accent:#2c4a6e;
+    --heat-low:#7c98ab;
+    --heat-high:#a85a52;
+    --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+    --sans:"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--serif);
+    font-size:19px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--link);}
+  .wrap{max-width:700px; margin:0 auto; padding:0 24px;}
+  @media (max-width:600px){ body{font-size:17.5px;} }
+
+  header.site-nav{border-bottom:1px solid var(--line);}
+  .nav-inner{
+    max-width:700px; margin:0 auto; padding:18px 24px;
+    display:flex; align-items:center; justify-content:space-between; gap:20px;
+  }
+  .nav-mark{font-family:var(--serif); font-weight:600; font-size:16px; color:var(--ink); text-decoration:none;}
+  .nav-links{display:flex; gap:18px; font-family:var(--sans); font-size:12px; letter-spacing:.03em;}
+  .nav-links a{color:var(--gray-500); text-decoration:none;}
+  .nav-links a:hover{color:var(--ink);}
+  @media (max-width:640px){ .nav-links{display:none;} }
+
+  main{padding:56px 0 80px;}
+
+  .kicker{font-family:var(--sans); font-size:12.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--gray-500); margin-bottom:14px;}
+  h1{font-family:var(--serif); font-weight:600; font-size:clamp(30px,5vw,38px); line-height:1.2; color:var(--ink);}
+  .dek{font-family:var(--serif); font-weight:400; font-size:21px; line-height:1.5; color:var(--gray-700); margin-top:14px;}
+
+  .byline{margin-top:28px; font-family:var(--sans); font-size:14px; color:var(--gray-500); line-height:1.8;}
+  .byline strong{color:var(--ink); font-weight:600;}
+
+  hr{border:none; border-top:1px solid var(--line); margin:36px 0;}
+
+  section{margin:52px 0;}
+  h2{font-family:var(--serif); font-weight:600; font-size:26px; color:var(--ink);}
+  .sub{font-family:var(--serif); font-style:italic; font-size:16px; color:var(--gray-500); margin-top:6px; margin-bottom:22px;}
+  h3{font-family:var(--serif); font-weight:600; font-size:18px; color:var(--ink); margin:26px 0 10px;}
+  p{margin:16px 0;}
+  .label{font-family:var(--sans); font-weight:600; font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--gray-500); margin-bottom:8px;}
+
+  ul.bullets{list-style:none; margin:16px 0;}
+  ul.bullets li{position:relative; padding-left:20px; margin:10px 0;}
+  ul.bullets li::before{content:"—"; position:absolute; left:0; color:var(--gray-300);}
+  ul.bullets.tight li{margin:6px 0;}
+
+  blockquote{
+    border-left:2px solid var(--line); padding-left:20px; margin:24px 0;
+    font-family:var(--serif); font-style:italic; color:var(--gray-700); font-size:19px;
+  }
+  blockquote cite{display:block; font-family:var(--sans); font-style:normal; font-size:13px; color:var(--gray-500); margin-top:8px;}
+
+  table{border-collapse:collapse; width:100%; font-family:var(--sans); font-size:14px;}
+  .table-scroll{overflow-x:auto; margin:20px 0;}
+  table caption{text-align:left; font-family:var(--sans); font-size:13px; color:var(--gray-500); margin-bottom:10px; caption-side:top; font-style:italic;}
+  table th, table td{padding:9px 12px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap;}
+  table thead th{font-weight:600; color:var(--ink); font-size:12.5px; border-bottom:1px solid var(--ink);}
+  table tbody tr:last-child td{border-bottom:none;}
+  table td.num{font-variant-numeric:tabular-nums; text-align:right;}
+  table th.num{text-align:right;}
+  table td.wrap-cell, table th.wrap-cell{white-space:normal;}
+  table td.min{font-weight:700;}
+
+  /* Figures */
+  .fig{margin:32px 0;}
+  .fig-label{font-family:var(--sans); font-size:12px; letter-spacing:.05em; text-transform:uppercase; color:var(--gray-500); font-weight:600;}
+  .fig-title{font-family:var(--serif); font-weight:600; font-size:19px; margin-top:4px;}
+
+  .chart{margin-top:20px;}
+  .bar-row{display:flex; align-items:center; gap:12px; margin:10px 0; font-family:var(--sans); font-size:13.5px;}
+  .bar-row .l{width:180px; flex-shrink:0; color:var(--ink);}
+  .bar-row .track{flex:1; background:var(--bar-track); border-radius:2px; height:20px; position:relative;}
+  .bar-row .track > div{height:100%; background:var(--accent); border-radius:2px;}
+  .bar-row .v{width:44px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; font-weight:600;}
+
+  .heatmap-wrap{overflow-x:auto; margin-top:20px;}
+  .heatmap{border-collapse:separate; border-spacing:2px; font-family:var(--sans); font-size:12px;}
+  .heatmap th{font-weight:600; color:var(--gray-500); font-size:11px; padding:6px 8px; text-align:center; white-space:nowrap;}
+  .heatmap th.row-h{text-align:right; font-size:12px; color:var(--ink); font-weight:600; white-space:normal; max-width:170px;}
+  .heatmap td{width:52px; height:38px; text-align:center; font-weight:600; color:#fff; font-variant-numeric:tabular-nums;}
+  .heatmap-scale{display:flex; align-items:center; gap:10px; margin-top:14px; font-family:var(--sans); font-size:12px; color:var(--gray-500);}
+  .heatmap-gradient{width:140px; height:9px; border-radius:4px; background:linear-gradient(90deg, var(--heat-low), var(--heat-high));}
+
+  .table-note{font-family:var(--sans); font-size:13px; color:var(--gray-500); margin-top:8px; font-style:italic;}
+
+  footer{border-top:1px solid var(--line); padding:40px 0 60px;}
+  footer .wrap{font-family:var(--sans); font-size:13px; color:var(--gray-500); line-height:1.7;}
+  footer strong{color:var(--ink);}
+
+  ::selection{background:#dcdcd8;}
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="#top" class="nav-mark">SNAPGraph NC</a>
+    <nav class="nav-links">
+      <a href="#intro">Introduction</a>
+      <a href="#background">Background</a>
+      <a href="#method">Methodology</a>
+      <a href="#results">Results</a>
+      <a href="#discussion">Discussion</a>
+      <a href="#references">References</a>
+      <a href="SNAPGraphNC-Paper.pdf">PDF</a>
+      <a href="index.html">&larr; Portfolio</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top" class="wrap">
+
+  <div class="kicker">Research paper companion &middot; 6 min read</div>
+  <h1>SNAPGraph NC</h1>
+  <p class="dek">Modeling the Tradeoff Between Payment Accuracy and Access in North Carolina SNAP Recertification</p>
+
+  <div class="byline">
+    <strong>Vaibhav Narula</strong> (Author)<br>
+    Willow Spring High School, Raleigh, North Carolina<br>
+    North Carolina Summer Ventures in Science and Mathematics, East Carolina University<br>
+    Dr. Susan Mattingly (Mentor)
+  </div>
+
+  <hr>
+
+  <section id="abstract">
+    <div class="label">Abstract</div>
+    <p>SNAP recipients must <strong>recertify their eligibility every six months</strong>. Stronger verification catches payment errors, but it can also push eligible households out, and North Carolina's error rate is already above the 6% threshold tied to future federal penalties.</p>
+    <p><strong>SNAPGraph NC</strong> models recertification as a directed graph: ten checkpoints, scored on complexity, documentation burden, and consequence, then tested against ten hypothetical household paths and four administrative strategies.</p>
+    <ul class="bullets tight">
+      <li><strong>Income verification</strong> had the highest total risk and concentration score</li>
+      <li>The path combining <strong>variable income and work-rule screening</strong> carried the highest cumulative risk</li>
+      <li><strong>Access-supportive targeted review</strong>, narrow review paired with household support, produced the lowest average modeled risk of the four strategies tested</li>
+    </ul>
+    <p>Targeted review combined with household support, not broad verification, appears to offer the better balance between payment accuracy and access.</p>
+  </section>
+
+  <section id="intro">
+    <h2>Introduction</h2>
+    <div class="sub">Why a household can stay eligible and still lose its benefits</div>
+    <p>A household can be fully eligible for food assistance and still lose it, over a late form, a missing document, or a misunderstood rule. Every six months, SNAP recipients must recertify, and that process introduces paperwork, deadlines, and verification steps that can interrupt benefits before any fraud is ever found.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption>Table 1. How SNAP recertification features can affect payment accuracy and household access.</caption>
+        <thead><tr><th>Feature</th><th class="wrap-cell">Purpose</th><th class="wrap-cell">Access risk</th></tr></thead>
+        <tbody>
+          <tr><td class="wrap-cell">Notices &amp; deadlines</td><td class="wrap-cell">Prompt timely recertification</td><td class="wrap-cell">Missed notices interrupt benefits</td></tr>
+          <tr><td class="wrap-cell">Income &amp; document verification</td><td class="wrap-cell">Confirm eligibility, calculate benefit</td><td class="wrap-cell">Missing records delay or end benefits</td></tr>
+          <tr><td class="wrap-cell">Rule &amp; exemption screening</td><td class="wrap-cell">Apply work requirements</td><td class="wrap-cell">Complex rules cause wrong decisions</td></tr>
+          <tr><td class="wrap-cell">Benefit decision &amp; notice</td><td class="wrap-cell">Communicate outcome</td><td class="wrap-cell">Unclear decisions complicate appeals</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>North Carolina's payment error rate remains above the federal threshold tied to future penalties. This project asks a narrower question: not whether recertification is burdensome in general — but <strong>which specific checkpoints</strong> in North Carolina's process carry that burden, and whether payment errors can be reduced without pushing eligible households out.</p>
+  </section>
+
+  <section id="background">
+    <h2>The 6% Line</h2>
+    <div class="sub">North Carolina's error rate, the federal penalty, and what prior research says</div>
+    <p>SNAP exists to make sure eligible households can afford food. Over <strong>1.4 million North Carolinians</strong> are assisted each month.</p>
+
+    <ul class="bullets">
+      <li><strong>7.36%</strong> — North Carolina's FY2025 SNAP payment error rate, versus a 10.62% national average</li>
+      <li><strong>6.0%</strong> — the federal error-rate threshold H.R. 1 ties to funding penalties</li>
+      <li><strong>$420 million</strong> — what North Carolina risks losing in federal reimbursement if the rate isn't brought below 6%</li>
+      <li>Work-requirement screening now applies to most recipients aged 18–64 unless exempt</li>
+    </ul>
+
+    <p>Reducing the error rate takes more verification, and that friction is not free:</p>
+    <ul class="bullets">
+      <li><strong>Moynihan et al. (2015)</strong> describe administrative burden as learning costs, psychological costs, and compliance costs combined</li>
+      <li><strong>Homonoff &amp; Somerville (2021)</strong> found SNAP cases opened later in the month were 22% less likely to successfully recertify, even after controlling for eligibility</li>
+      <li><strong>Potluri et al. (2025)</strong> found more support for recipients reduced food insecurity — the cost of staying enrolled matters as much as strict verification</li>
+    </ul>
+
+    <p>Most prior research isolates one piece of this burden. SNAPGraph NC instead treats recertification as a connected chain of checkpoints, so risk can be located at the exact step where households are dropped.</p>
+  </section>
+
+  <section id="method">
+    <h2>The Model</h2>
+    <div class="sub">How ten checkpoints, ten household paths, and four strategies were scored</div>
+
+    <ul class="bullets">
+      <li><strong>Not empirical.</strong> SNAPGraph NC is a source-supported mathematical model, not an analysis of real case records — scores are modeled assumptions, not USDA measurements</li>
+      <li>Built in <strong>Excel</strong>, analyzed in <strong>Google Colab</strong> (pandas, NumPy, NetworkX, matplotlib)</li>
+      <li>Recertification is modeled as a <strong>directed graph</strong>: checkpoints are nodes, transitions are edges, and a household's experience is a path</li>
+    </ul>
+
+    <p>Ten checkpoints, C1 (recertification notice) through C10 (outcome), were each scored 1–5 on three dimensions: <strong>complexity</strong>, <strong>documentation burden</strong>, and <strong>consequence</strong>.</p>
+
+    <div class="table-scroll">
+      <table id="rubricTable">
+        <caption>Table 2. SNAP recertification checkpoints and modeled rubric scores (1 low – 5 high).</caption>
+        <thead><tr>
+          <th>Code</th><th>Checkpoint</th><th class="num">Complexity</th><th class="num">Doc. burden</th><th class="num">Consequence</th>
+          <th class="num">Payment-error risk</th><th class="num">Access-burden risk</th><th class="num">Total risk</th>
+        </tr></thead>
+        <tbody id="rubricBody"></tbody>
+      </table>
+    </div>
+
+    <p style="font-style:italic;">Payment-error risk = 0.5C + 0.2D + 0.3K<br>Access-burden risk = 0.2C + 0.5D + 0.3K<br>Total checkpoint risk = Payment-error risk + Access-burden risk</p>
+    <p><strong>Complexity</strong> is weighted heaviest for payment-error risk, since complex rules create room for mistakes. <strong>Documentation burden</strong> is weighted heaviest for access-burden risk, since documentation gaps are what cause households to fall out of the process.</p>
+
+    <p>Ten hypothetical household paths were built, each scored 0–3 on six severity factors — income change, household composition, deductions, work-rule screening, document risk, and deadline/notice risk.</p>
+
+    <div class="table-scroll">
+      <table id="pathTable">
+        <caption>Table 3. Severity scores used to construct the ten modeled household paths (0 = minor, 3 = central to that path).</caption>
+        <thead><tr>
+          <th>Path</th><th class="wrap-cell">Scenario</th><th class="num">Income</th><th class="num">H.C.</th><th class="num">D/E</th><th class="num">W.R.</th><th class="num">Doc.</th><th class="num">Notice</th>
+        </tr></thead>
+        <tbody id="pathBody"></tbody>
+      </table>
+    </div>
+
+    <p style="font-style:italic;">Concentration score = Total checkpoint risk &times; Path frequency</p>
+
+    <p>Four administrative strategies were compared by reweighting payment-error risk against access-burden risk:</p>
+    <ul class="bullets">
+      <li><strong>Baseline recertification</strong> — no reweighting</li>
+      <li><strong>Broad enhanced verification</strong> — heavier access-burden weight (+25%)</li>
+      <li><strong>Targeted risk-based review</strong> — modest cuts to both risks</li>
+      <li><strong>Access-supportive targeted review</strong> — targeted review paired with reminders, clearer notices, and help completing paperwork</li>
+    </ul>
+  </section>
+
+  <section id="results">
+    <h2>Where the Risk Concentrates</h2>
+    <div class="sub">Checkpoint risk, path risk, and the strategy payoff matrix, compared</div>
+    <p>All values below come directly from the model's calculated output.</p>
+
+    <ul class="bullets">
+      <li><strong>Income verification (C3)</strong> — highest total risk, 10.0</li>
+      <li><strong>Document verification (C6)</strong> and <strong>work-requirement screening (C5)</strong> — tied for second, 9.3</li>
+      <li><strong>Outcome (C10)</strong> — lowest, 5.1</li>
+      <li><strong>C8</strong> (final benefit calculation) leans toward payment-error risk (4.2 vs. 3.0) — <strong>C6</strong> leans the opposite way (4.5 vs. 4.8)</li>
+    </ul>
+
+    <div class="fig">
+      <div class="fig-label">Figure 1</div>
+      <div class="fig-title">Risk concentration by checkpoint</div>
+      <p class="table-note" style="margin-top:2px;">Total checkpoint risk &times; path frequency — how often each checkpoint is actually encountered.</p>
+      <div class="chart" id="chartConcentration"></div>
+      <p class="table-note">C5 has a high individual risk score but falls to <strong>last place</strong> once weighted by frequency — only 2 of 10 paths ever reach it. C3, C6, and C7 stay on top because every path passes through them.</p>
+    </div>
+
+    <ul class="bullets">
+      <li><strong>P7</strong> (variable income + work-rule adult) — highest path risk, 76.4, the only path touching all ten checkpoints</li>
+      <li><strong>P6</strong> and <strong>P10</strong> — lowest, 44.6</li>
+      <li>Reweighting toward complexity or documentation burden didn't change the story: <strong>C3, C6, C7 stayed the top three</strong> checkpoints across all three sensitivity versions</li>
+    </ul>
+
+    <div class="fig">
+      <div class="fig-label">Figure 2</div>
+      <div class="fig-title">Administrative strategy payoff matrix</div>
+      <p class="table-note" style="margin-top:2px;">Modeled risk score for each strategy applied to each household path. Lower is better.</p>
+      <div class="heatmap-wrap">
+        <table class="heatmap" id="heatmapTable"></table>
+      </div>
+      <div class="heatmap-scale"><span>Lower risk</span><div class="heatmap-gradient"></div><span>Higher risk</span></div>
+      <p class="table-note"><strong>Access-supportive targeted review</strong> had the lowest average risk (52.25) and outperformed every other strategy on every single path. <strong>Broad enhanced verification</strong> had the highest average (65.50).</p>
+    </div>
+  </section>
+
+  <section id="discussion">
+    <h2>What the Model Suggests</h2>
+    <div class="sub">How the findings connect to prior research, and where the model falls short</div>
+
+    <ul class="bullets">
+      <li>Risk concentrates at checkpoints that are both <strong>difficult and nearly universal</strong> — income and document verification</li>
+      <li><strong>Work-requirement screening</strong> has a high individual risk score but low overall concentration, since few paths reach it</li>
+      <li>The <strong>longer</strong> a household's path, the <strong>higher</strong> its total risk — which is why P7, the only path with all ten checkpoints, ranks highest</li>
+    </ul>
+
+    <blockquote>
+      Broad enhanced verification produced the highest level of modeled risk because the increase in access difficulty was greater than the decrease in payment-error risk.
+      Consistent with Homonoff &amp; Somerville (2021), on how harder recertification reduces successful completion.
+    </blockquote>
+
+    <p>Access-supportive targeted review performed best in the model, echoing <strong>Potluri et al. (2025)</strong> on the importance of participation-friendly policy design.</p>
+
+    <h3>Limitations</h3>
+    <ul class="bullets">
+      <li>Coefficients are <strong>approximated</strong>, not measured</li>
+      <li>Path frequency reflects only the cases built into the model</li>
+      <li>Excludes human judgment, household-specific circumstances, technology, and delays</li>
+      <li>Sensitivity testing confirms stability <strong>within this model only</strong>, not real-world validity</li>
+      <li>Cannot establish causal relationships or predict future error rates</li>
+    </ul>
+
+    <h3>Future work</h3>
+    <ul class="bullets">
+      <li>Validate modeled scores against caseworkers or SNAP participants</li>
+      <li>Apply the checkpoint structure to real administrative or case-level data</li>
+      <li>Compare North Carolina's process to other states</li>
+      <li>Test the model against a larger, more detailed set of household paths</li>
+    </ul>
+  </section>
+
+  <section id="acknowledgments">
+    <h2>Acknowledgments</h2>
+    <div class="sub">Subject matter experts who reviewed this work</div>
+    <ul class="bullets">
+      <li><strong>Dr. Susan Mattingly</strong> — Mentor, North Carolina Summer Ventures in Science and Mathematics, East Carolina University</li>
+      <li><strong>Dr. Katherine Jones</strong> — East Carolina University</li>
+      <li><strong>Maureen Berner, Ph.D.</strong> — Professor of Public Administration and Government, School of Government, University of North Carolina at Chapel Hill</li>
+    </ul>
+  </section>
+
+  <section id="references">
+    <h2>References</h2>
+    <p>Homonoff, T., &amp; Somerville, J. (2021). Program recertification costs: Evidence from SNAP. <em>American Economic Journal: Economic Policy, 13</em>(4), 271&ndash;298. <a href="https://doi.org/10.1257/pol.20190272" target="_blank" rel="noopener">doi.org/10.1257/pol.20190272</a></p>
+    <p>Moynihan, D., Herd, P., &amp; Harvey, H. (2015). Administrative burden: Learning, psychological, and compliance costs in citizen-state interactions. <em>Journal of Public Administration Research and Theory, 25</em>(1), 43&ndash;69. <a href="https://doi.org/10.1093/jopart/muu009" target="_blank" rel="noopener">doi.org/10.1093/jopart/muu009</a></p>
+    <p>North Carolina Department of Health and Human Services. (n.d.-a). How can we consistently reduce our SNAP error rate below 6%? <em>NC Project Portal</em>. Retrieved July 17, 2026, from <a href="https://projectportal.nc.gov/projects/snap-payment-error-rate-below-6" target="_blank" rel="noopener">projectportal.nc.gov</a></p>
+    <p>North Carolina Department of Health and Human Services. (n.d.-b). Work requirements for able-bodied adults without dependents. Retrieved July 18, 2026, from <a href="https://www.ncdhhs.gov/divisions/child-and-family-well-being/food-and-nutrition-services-food-stamps/able-bodied-adults-without-dependents-abawds" target="_blank" rel="noopener">ncdhhs.gov</a></p>
+    <p>North Carolina Department of Health and Human Services, Division of Social Services. (n.d.-c). FNS cases and participants [Data set]. Retrieved July 17, 2026, from <a href="https://www.ncdhhs.gov/fns-cases-and-participants-website-data-thru-06-2026/download" target="_blank" rel="noopener">ncdhhs.gov</a></p>
+    <p>Potluri, S., Venkataramani, A. S., Lorch, S. A., Illenberger, N., &amp; Khatana, S. A. M. (2025). Supplemental Nutrition Assistance Program policies and food insecurity. <em>JAMA Health Forum, 6</em>(12), e255597. <a href="https://doi.org/10.1001/jamahealthforum.2025.5597" target="_blank" rel="noopener">doi.org/10.1001/jamahealthforum.2025.5597</a></p>
+    <p>U.S. Department of Agriculture, Food and Nutrition Service. (2026, June 24). USDA announces FY 2025 state payment error rates in SNAP [Press release]. <a href="https://www.usda.gov/about-usda/news/press-releases/2026/06/24/usda-announces-fy-2025-state-payment-error-rates-snap" target="_blank" rel="noopener">usda.gov</a></p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <strong>Vaibhav Narula</strong> &middot; Willow Spring High School, Raleigh, North Carolina<br>
+    North Carolina Summer Ventures in Science and Mathematics, East Carolina University &middot; Mentor: Dr. Susan Mattingly
+  </div>
+</footer>
+
+<script>
+(function(){
+  var CHECKPOINTS = [
+    {code:'C1', name:'Recertification notice', c:3,d:2,k:5, pe:3.4, ab:3.1, total:6.5, freq:10, conc:65.0},
+    {code:'C2', name:'Household composition', c:4,d:3,k:4, pe:3.8, ab:3.5, total:7.3, freq:7,  conc:51.1},
+    {code:'C3', name:'Income verification', c:5,d:5,k:5, pe:5.0, ab:5.0, total:10.0, freq:10, conc:100.0},
+    {code:'C4', name:'Deduction and expense review', c:4,d:4,k:4, pe:4.0, ab:4.0, total:8.0, freq:5, conc:40.0},
+    {code:'C5', name:'Work-requirement screening', c:5,d:4,k:5, pe:4.8, ab:4.5, total:9.3, freq:2, conc:18.6},
+    {code:'C6', name:'Document verification', c:4,d:5,k:5, pe:4.5, ab:4.8, total:9.3, freq:10, conc:93.0},
+    {code:'C7', name:'Case-worker or system review', c:4,d:2,k:5, pe:3.9, ab:3.3, total:7.2, freq:10, conc:72.0},
+    {code:'C8', name:'Final benefit calculation', c:5,d:1,k:5, pe:4.2, ab:3.0, total:7.2, freq:8, conc:57.6},
+    {code:'C9', name:'Notice of decision', c:3,d:2,k:5, pe:3.4, ab:3.1, total:6.5, freq:10, conc:65.0},
+    {code:'C10', name:'Outcome', c:2,d:1,k:5, pe:2.7, ab:2.4, total:5.1, freq:10, conc:51.0}
+  ];
+
+  var PATHS = [
+    {id:'P1', name:'Stable renewal', income:0,hc:0,de:0,wr:0,dr:1,notice:1, risk:59.10},
+    {id:'P2', name:'Changing income household', income:3,hc:1,de:1,wr:0,dr:3,notice:2, risk:67.10},
+    {id:'P3', name:'Work-rule adult', income:2,hc:0,de:0,wr:3,dr:3,notice:2, risk:61.10},
+    {id:'P4', name:'Parent with children', income:1,hc:3,de:2,wr:0,dr:3,notice:2, risk:67.10},
+    {id:'P5', name:'Elderly or disabled household', income:1,hc:2,de:3,wr:0,dr:3,notice:2, risk:67.10},
+    {id:'P6', name:'Missing documents', income:2,hc:1,de:1,wr:1,dr:3,notice:3, risk:44.60},
+    {id:'P7', name:'Variable income plus work-rule adult', income:3,hc:1,de:2,wr:3,dr:3,notice:3, risk:76.40},
+    {id:'P8', name:'Household composition change', income:1,hc:3,de:1,wr:0,dr:2,notice:2, risk:59.10},
+    {id:'P9', name:'Deduction-heavy household', income:1,hc:1,de:3,wr:0,dr:3,notice:2, risk:67.10},
+    {id:'P10', name:'Notice or deadline-risk household', income:1,hc:0,de:0,wr:0,dr:2,notice:3, risk:44.60}
+  ];
+
+  var STRATEGIES = [
+    {name:'Baseline recertification', avg:61.33, values:[59.10,67.10,61.10,67.10,67.10,44.60,76.40,59.10,67.10,44.60]},
+    {name:'Broad enhanced verification', avg:65.50, values:[63.06,71.66,65.21,71.66,71.66,47.73,81.61,63.06,71.66,47.73]},
+    {name:'Targeted risk-based review', avg:58.02, values:[55.87,63.48,57.77,63.48,63.48,42.25,72.28,55.87,63.48,42.25]},
+    {name:'Access-supportive targeted review', avg:52.25, values:[50.37,57.17,52.07,57.17,57.17,37.97,65.09,50.37,57.17,37.97]}
+  ];
+
+  // Rubric table (Table 2)
+  var rubricBody = document.getElementById('rubricBody');
+  CHECKPOINTS.forEach(function(cp){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + cp.code + '</td>' +
+      '<td class="wrap-cell">' + cp.name + '</td>' +
+      '<td class="num">' + cp.c + '</td>' +
+      '<td class="num">' + cp.d + '</td>' +
+      '<td class="num">' + cp.k + '</td>' +
+      '<td class="num">' + cp.pe.toFixed(1) + '</td>' +
+      '<td class="num">' + cp.ab.toFixed(1) + '</td>' +
+      '<td class="num">' + cp.total.toFixed(1) + '</td>';
+    rubricBody.appendChild(tr);
+  });
+
+  // Path table (Table 3)
+  var pathBody = document.getElementById('pathBody');
+  PATHS.forEach(function(p){
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td>' + p.id + '</td>' +
+      '<td class="wrap-cell">' + p.name + '</td>' +
+      '<td class="num">' + p.income + '</td>' +
+      '<td class="num">' + p.hc + '</td>' +
+      '<td class="num">' + p.de + '</td>' +
+      '<td class="num">' + p.wr + '</td>' +
+      '<td class="num">' + p.dr + '</td>' +
+      '<td class="num">' + p.notice + '</td>';
+    pathBody.appendChild(tr);
+  });
+
+  // Figure 1: concentration bar chart
+  var chartEl = document.getElementById('chartConcentration');
+  var maxConc = Math.max.apply(null, CHECKPOINTS.map(function(c){return c.conc;}));
+  CHECKPOINTS.slice().sort(function(a,b){return b.conc-a.conc;}).forEach(function(cp){
+    var pct = (cp.conc / maxConc) * 100;
+    var row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML =
+      '<div class="l">' + cp.code + ' — ' + cp.name + '</div>' +
+      '<div class="track"><div style="width:' + pct + '%"></div></div>' +
+      '<div class="v">' + cp.conc.toFixed(1) + '</div>';
+    chartEl.appendChild(row);
+  });
+
+  // Figure 2: payoff matrix heatmap
+  var heat = document.getElementById('heatmapTable');
+  var allVals = STRATEGIES.reduce(function(acc,s){return acc.concat(s.values);}, []);
+  var vmin = Math.min.apply(null, allVals), vmax = Math.max.apply(null, allVals);
+  function heatColor(v){
+    var t = (v - vmin) / (vmax - vmin);
+    var low = [124,152,171], high = [168,90,82];
+    var rgb = low.map(function(c,i){ return Math.round(c + (high[i]-c)*t); });
+    return 'rgb(' + rgb.join(',') + ')';
+  }
+  var thead = document.createElement('tr');
+  thead.innerHTML = '<th></th>' + PATHS.map(function(p){ return '<th title="'+p.name+'">'+p.id+'</th>'; }).join('') + '<th>Avg.</th>';
+  heat.appendChild(thead);
+  STRATEGIES.forEach(function(strat){
+    var row = document.createElement('tr');
+    var cells = '<th class="row-h">' + strat.name + '</th>';
+    strat.values.forEach(function(v, i){
+      cells += '<td style="background:' + heatColor(v) + '" title="' + PATHS[i].name + ': ' + v.toFixed(2) + '">' + v.toFixed(0) + '</td>';
+    });
+    cells += '<td style="background:#3a3a3a">' + strat.avg.toFixed(1) + '</td>';
+    row.innerHTML = cells;
+    heat.appendChild(row);
+  });
+})();
+</script>
+</body>
+</html>
