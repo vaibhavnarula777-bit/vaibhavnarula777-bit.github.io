@@ -78,14 +78,14 @@
   function pad(n){ return (n < 10 ? '0' : '') + n; }
   function go(n){
     page = Math.max(1, Math.min(N, n));
-    img.src = 'assets/paper/p-' + pad(page) + '.png';
+    img.src = 'p-' + pad(page) + '.png';
     img.alt = 'Page ' + page + ' of the SNAPGraph NC paper';
     slide.value = page;
     count.textContent = page + ' / ' + N;
     prev.disabled = page === 1;
     next.disabled = page === N;
     var pre = new Image();
-    if (page < N) pre.src = 'assets/paper/p-' + pad(page + 1) + '.png';
+    if (page < N) pre.src = 'p-' + pad(page + 1) + '.png';
   }
   prev.addEventListener('click', function(){ go(page - 1); });
   next.addEventListener('click', function(){ go(page + 1); });
