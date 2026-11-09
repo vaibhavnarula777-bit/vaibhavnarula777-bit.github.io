@@ -360,11 +360,17 @@ html:not(.anim) .sec-line{transform:none}
   <div class="panel" id="sheet-srip" role="tabpanel" hidden><div class="panel-grid">
     <div class="info">
       <h3 class="ph">Ways to Write a <em>2 by n</em> Matrix</h3>
-      <p>A solution to a College Mathematics Journal problem about placing the numbers 1 to 2n in a 2 by n grid so that no two consecutive numbers share a column. I wrote it with Summer Chu and Akulnand Sreelesh at NCSSM's Summer Research Innovation Program, where I was 1 of 12 students picked from across the state.</p>
+      <p>We solved a College Mathematics Journal problem about placing the numbers 1 to 2n in a 2 by n grid so that no two consecutive numbers share a column. SRIP: 1 of 12 students selected statewide.</p>
       <div class="cta"><a class="btn solid" href="SRIP-Paper.pdf">Read the paper</a></div>
     </div>
     <div>
-      <div class="pagebox"><div class="sheetimg"><img src="srip-p1.png" alt="First page of the SRIP paper, Ways to Write a 2 by n Matrix" width="680" height="880"></div></div>
+      <div class="pagebox" id="sripbox"><div class="sheetimg"><img id="sripimg" src="srip-01.png" alt="Page 1 of the SRIP paper" width="765" height="990"></div></div>
+      <div class="pager">
+        <button type="button" id="sripprev" aria-label="Previous page">&larr;</button>
+        <input type="range" id="sripslide" min="1" max="3" step="1" value="1" aria-label="Page">
+        <button type="button" id="sripnext" aria-label="Next page">&rarr;</button>
+        <span class="pcount" id="sripcount">1 / 3</span>
+      </div>
     </div>
   </div></div>
 </section>

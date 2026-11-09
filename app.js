@@ -71,37 +71,41 @@
   window.addEventListener('resize', onScroll);
   onScroll();
 
-  /* ---------- paper pager ---------- */
-  var N = 21, page = 1;
-  var img = document.getElementById('pageimg'), slide = document.getElementById('pageslide');
-  var prev = document.getElementById('prev'), next = document.getElementById('next'), count = document.getElementById('pcount');
-  function pad(n){ return (n < 10 ? '0' : '') + n; }
-  function go(n){
-    page = Math.max(1, Math.min(N, n));
-    img.src = 'p-' + pad(page) + '.png';
-    img.alt = 'Page ' + page + ' of the SNAPGraph NC paper';
-    slide.value = page;
-    count.textContent = page + ' / ' + N;
-    prev.disabled = page === 1;
-    next.disabled = page === N;
-    var pre = new Image();
-    if (page < N) pre.src = 'p-' + pad(page + 1) + '.png';
+  /* ---------- paper pagers ---------- */
+  function pager(o){
+    var page = 1, N = o.n;
+    var img = document.getElementById(o.img), slide = document.getElementById(o.slide);
+    var prev = document.getElementById(o.prev), next = document.getElementById(o.next), count = document.getElementById(o.count);
+    var box = document.getElementById(o.box);
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    function src(n){ return o.path.replace('##', pad(n)); }
+    function go(n){
+      page = Math.max(1, Math.min(N, n));
+      img.src = src(page);
+      img.alt = 'Page ' + page + ' of the ' + o.name + ' paper';
+      slide.value = page;
+      count.textContent = page + ' / ' + N;
+      prev.disabled = page === 1;
+      next.disabled = page === N;
+      if (page < N) { var pre = new Image(); pre.src = src(page + 1); }
+    }
+    prev.addEventListener('click', function(){ go(page - 1); });
+    next.addEventListener('click', function(){ go(page + 1); });
+    slide.addEventListener('input', function(){ go(+slide.value); });
+    box.tabIndex = 0;
+    box.setAttribute('aria-label', 'Paper page. Use left and right arrow keys to turn pages.');
+    box.addEventListener('keydown', function(e){
+      if (e.key === 'ArrowRight') { go(page + 1); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { go(page - 1); e.preventDefault(); }
+    });
+    box.addEventListener('click', function(e){
+      var r = box.getBoundingClientRect();
+      go(e.clientX < r.left + r.width / 2 ? page - 1 : page + 1);
+    });
+    go(1);
   }
-  prev.addEventListener('click', function(){ go(page - 1); });
-  next.addEventListener('click', function(){ go(page + 1); });
-  slide.addEventListener('input', function(){ go(+slide.value); });
-  var box = document.querySelector('.pagebox');
-  box.tabIndex = 0;
-  box.setAttribute('aria-label', 'Paper page. Use left and right arrow keys to turn pages.');
-  box.addEventListener('keydown', function(e){
-    if (e.key === 'ArrowRight') { go(page + 1); e.preventDefault(); }
-    if (e.key === 'ArrowLeft') { go(page - 1); e.preventDefault(); }
-  });
-  box.addEventListener('click', function(e){
-    var r = box.getBoundingClientRect();
-    go(e.clientX < r.left + r.width / 2 ? page - 1 : page + 1);
-  });
-  go(1);
+  pager({n:21, img:'pageimg', slide:'pageslide', prev:'prev', next:'next', count:'pcount', box:'pagebox', path:'p-##.png', name:'SNAPGraph NC'});
+  pager({n:3, img:'sripimg', slide:'sripslide', prev:'sripprev', next:'sripnext', count:'sripcount', box:'sripbox', path:'srip-##.png', name:'SRIP'});
 
   /* ---------- copy address ---------- */
   var copy = document.getElementById('copy'), msg = document.getElementById('copied'), mail = document.getElementById('mail');
