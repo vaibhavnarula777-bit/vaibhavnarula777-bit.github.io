@@ -1,5 +1,3 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body>
 
 <meta name="claude:viewport-fit-sides" content="cover">
 <title>Vaibhav Narula</title>
@@ -212,13 +210,47 @@ html:not(.anim) .sec-line{transform:none}
 .anim .pop.in{opacity:1;transform:rotate(-1deg)}
 .hero .wrap{position:relative;z-index:1}
 @media (prefers-reduced-motion:reduce){.anim .reveal,.anim .pop{opacity:1;transform:none}.hint svg{animation:none}}
+
+/* v2: photos, SRIP tab, spacing, dog */
+.hero{padding-block:56px 170px}
+.about{padding-block:150px 170px}
+.projects{padding-block:150px 170px}
+.contact{padding-block:150px 190px}
+@media (max-width:860px){.hero{padding-block:30px 120px}.about{padding-block:110px 120px}.projects{padding-block:110px 120px}.contact{padding-block:110px 150px}}
+.tabs{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:980px){.tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.tabs{grid-template-columns:1fr}}
+.photos{position:relative;width:100%;max-width:520px;aspect-ratio:1/1.18;margin-inline:auto;justify-self:end}
+.pol{position:absolute;margin:0;background:#FFFDF6;padding:10px 10px 46px;border:1.5px solid var(--ink);box-shadow:5px 5px 0 var(--ink);--r:0deg;--tx:0;--ty:0;transform:translate(calc(var(--tx)*1px),calc(var(--ty)*1px)) rotate(var(--r));transition:transform .45s cubic-bezier(.2,.8,.2,1),box-shadow .2s,opacity .8s ease,scale .3s;cursor:pointer;z-index:1}
+.pol::before{content:"";position:absolute;top:-14px;left:50%;width:78px;height:24px;margin-left:-39px;background:rgba(233,184,36,.6);border:1px solid rgba(30,34,48,.22);transform:rotate(-3deg)}
+.pol img{display:block;width:100%;height:auto;object-fit:cover}
+.pol figcaption{position:absolute;left:14px;right:14px;bottom:9px;font-family:var(--hand);font-size:23px;line-height:1;color:var(--ink)}
+.pol.a{--r:-4deg;left:0;top:0;width:68%}
+.pol.a img{aspect-ratio:4/3}
+.pol.b{--r:3.5deg;right:0;bottom:0;width:54%}
+.pol.b img{aspect-ratio:4/5;object-position:center top}
+.pol:hover,.pol:focus-visible{--r:0deg;box-shadow:8px 9px 0 var(--ink);scale:1.04;z-index:6}
+.pol.top{z-index:5}
+.anim .pol{opacity:0}
+.anim .pol.in{opacity:1}
+#kid{position:fixed;right:18px;top:0;width:112px;height:153px;z-index:15;pointer-events:none;will-change:transform;transition:transform .22s ease-out}
+#kid svg{width:100%;height:100%;display:block;overflow:visible}
+#kid .pk{display:none}
+#kid.chute .pk-chute,#kid.fall .pk-fall,#kid.land .pk-land{display:inline}
+#kid.chute svg{transform-origin:50% 6%;animation:sway 2.6s ease-in-out infinite alternate}
+#kid .wave{transform-box:fill-box;transform-origin:0 100%;animation:wave .5s ease-in-out infinite alternate}
+@keyframes sway{from{rotate:-6deg}to{rotate:6deg}}
+@keyframes wave{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+#ground{position:fixed;left:0;right:0;bottom:14px;height:0;border-top:2px dashed rgba(30,34,48,.25);z-index:14;pointer-events:none;opacity:0;transition:opacity .5s}
+@media (prefers-reduced-motion:reduce){.pol{transition:none}#kid svg,#kid .wave{animation:none!important}}
+@media (max-width:560px){.brand{font-size:20px;white-space:nowrap}.bar nav{gap:12px}.bar nav a{font-size:18px;white-space:nowrap}}
 </style>
 
 <header class="bar" id="bar"><div class="wrap">
   <a class="brand" href="#top">V. Narula</a>
   <nav aria-label="Sections">
     <a href="#about" data-s="about">About</a>
-    <a href="#projects" data-s="projects">Projects</a>
+    <a href="#projects" data-s="projects">Projects &amp; Papers</a>
     <a href="#contact" data-s="contact">Contact</a>
   </nav>
 </div></header>
@@ -245,14 +277,10 @@ html:not(.anim) .sec-line{transform:none}
 <section class="about" id="about" data-s="about"><div class="sec-line"></div><div class="wrap">
   <div class="about-grid">
     <h2 id="aboutline">Hi, I'm Vaibhav. I'm a senior in North Carolina and an NCSSM Online student. I like math and policy. When I'm not doing either, I'm running or playing tennis.</h2>
-    <ul class="roles">
-      <li class="reveal"><b>Summer Research Innovation Program (SRIP)</b><span class="when">NCSSM</span>
-        <ul>
-          <li>1 of 12 students picked from across the state</li>
-          <li>Coauthored two papers, sent to The College Mathematics Journal</li>
-        </ul>
-        <a class="btn rl" href="SRIP-Paper.pdf">Read the paper</a></li>
-    </ul>
+    <div class="photos" id="photos">
+      <figure class="pol a" tabindex="0"><img src="photo-xc.jpg" width="1000" height="750" loading="lazy" alt="Six cross country teammates smiling at a night race, holding glow sticks and a North Carolina shaped FNL XC plaque"><figcaption>xc, fnl night</figcaption></figure>
+      <figure class="pol b" tabindex="0"><img src="photo-tennis.jpg" width="900" height="1195" loading="lazy" alt="Two tennis players holding a conference doubles draw sheet that ends in Champion"><figcaption>conference doubles</figcaption></figure>
+    </div>
   </div>
 </div></section>
 
@@ -262,13 +290,13 @@ html:not(.anim) .sec-line{transform:none}
     <button class="tab" type="button" role="tab" data-sheet="snap" aria-selected="true"><span class="kind">Paper</span><h3>SNAPGraph NC</h3></button>
     <button class="tab" type="button" role="tab" data-sheet="rural" aria-selected="false"><span class="kind">Model</span><h3>Rural Access NC</h3></button>
     <button class="tab" type="button" role="tab" data-sheet="bridge" aria-selected="false"><span class="kind">Model</span><h3>Policy Bridge NC</h3></button>
+    <button class="tab" type="button" role="tab" data-sheet="srip" aria-selected="false"><span class="kind">Paper</span><h3>SRIP</h3></button>
   </div>
 
   <div class="panel" id="sheet-snap" role="tabpanel"><div class="panel-grid">
     <div class="info">
       <h3 class="ph">SNAPGraph <em>NC</em></h3>
-      <p>Where do eligible North Carolina families lose SNAP benefits, and what does checking harder cost them? I scored ten recertification steps to find out. My mentor was Dr. Susan Mattingly.</p>
-      <p class="venue">Written at NC Summer Ventures in Science and Mathematics, East Carolina University</p>
+      <p>Where do eligible North Carolina families lose SNAP benefits, and what does checking harder cost them? I scored ten recertification steps to find out. My mentor was Dr. Susan Mattingly, and my subject matter expert was Dr. Maureen Berner at the UNC School of Government.</p>
       <div class="cta">
         <a class="btn solid" href="SNAPGraphNC-Paper.pdf">Read the paper</a>
         <a class="btn" href="paper.html">Web version</a>
@@ -329,6 +357,16 @@ html:not(.anim) .sec-line{transform:none}
       <p class="cap">Thicker line means a stronger fit. Yellow dot is a rural student.</p>
     </div>
   </div></div>
+  <div class="panel" id="sheet-srip" role="tabpanel" hidden><div class="panel-grid">
+    <div class="info">
+      <h3 class="ph">Ways to Write a <em>2 by n</em> Matrix</h3>
+      <p>A solution to a College Mathematics Journal problem about placing the numbers 1 to 2n in a 2 by n grid so that no two consecutive numbers share a column. I wrote it with Summer Chu and Akulnand Sreelesh at NCSSM's Summer Research Innovation Program, where I was 1 of 12 students picked from across the state.</p>
+      <div class="cta"><a class="btn solid" href="SRIP-Paper.pdf">Read the paper</a></div>
+    </div>
+    <div>
+      <div class="pagebox"><div class="sheetimg"><img src="srip-p1.png" alt="First page of the SRIP paper, Ways to Write a 2 by n Matrix" width="680" height="880"></div></div>
+    </div>
+  </div></div>
 </section>
 
 
@@ -345,4 +383,3 @@ html:not(.anim) .sec-line{transform:none}
 <script src="widgets.js"></script>
 <script src="app.js"></script>
 <script src="scroll.js"></script>
-</body></html>
